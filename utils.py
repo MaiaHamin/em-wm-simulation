@@ -36,7 +36,8 @@ def convert_spherical_to_angular(dim, ros):
 def return_sphere_context_supplier_from_params(d, m, v):
     return lambda idx, n_steps: fast_n_sphere(n_steps, d, v, m)
 
-# instead of redrawing the context every epoch, make a really long context walk and draw from different points on it
+# instead of redrawing the context every epoch, 
+# make a really long context walk and draw from different points on it
 def long_walk(long_context, idx=0, n_steps=20):
   n_idx = idx % int(len(long_context) / n_steps - 1)
   ctxt = long_context[n_idx * n_steps: (n_idx + 1) * n_steps]
