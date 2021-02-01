@@ -46,7 +46,7 @@ def run_model_for_epochs(net, taskL, ctxt_fn, stim_fn, training, neps_per_task, 
     if verb and ep % (neps_per_task / 5) == 0:
       print(ep / neps_per_task)
     # resample stim and context on each ep
-    stimset = stim_fn()
+    stimset = tr.Tensor(stim_fn())
     cdrift = ctxt_fn(n_steps=n_ctxt_steps)
     cdrift = tr.Tensor(cdrift)
     # interleave train on every task per epoch

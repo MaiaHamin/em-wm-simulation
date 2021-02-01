@@ -10,12 +10,7 @@ def spherical_drift(n_steps=20, dim=10, var=0.25, mean=0.25):
         noise = np.random.normal(mean, var, size=(dim - 1)) # add a separately-drawn Gaussian to each spherical coord
         ros += noise
         ctxt[i] = convert_spherical_to_angular(dim, ros)
-    if mean == 0:
-        stem = "new_spherical_diffusion_"
-    else:
-        stem = "new_spherical_drift_"
-    fn_name = stem + "d=" + str(dim) + "_m=" + str(mean) + "_v=" + str(var)
-    return ctxt, fn_name
+    return ctxt
 
 # Convert spherical coordinates to angular ones
 def convert_spherical_to_angular(dim, ros):

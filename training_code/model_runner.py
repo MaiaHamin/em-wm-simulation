@@ -9,7 +9,7 @@ from training_code.em_stimulus_history import simulate_em_and_plot_dprimes
 task = "nback"  # "stern"
 
 # function and parameters for the drifting context
-ctxt_fn = spherical_drift
+ctxt_fn_name = spherical_drift
 drift_parameters = [(0.25, 0.0), (0.25, 0.05), (0.25, 0.075), (0.4, 0.075)]
 ctxt_d = 25
 n_ctxt_steps=20
@@ -52,7 +52,8 @@ for seed in [1, 2]:
 
       print("Training WM... ")
 
-      stimset = gen_stims(stim_d)
+      # Lambda getter for the context fn with these parameters
+      ctxt_fn = lambda n_steps: spherical_drift(n_steps=n_steps, dim=ctxt_d, var=var, mean=mean)
 
       net = train_net_and_plot_accuracy(task, ctxt_fn, stim_fn, c_dim=ctxt_d, s_dim=stim_d, neps=n_training_eps, n_ctxt_steps=n_ctxt_steps,
                                         pr_match=pr_match, pr_slure=pr_slure, pr_clure=pr_clure, seed=seed,
