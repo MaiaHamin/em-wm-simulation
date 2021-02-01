@@ -1,1 +1,1 @@
-[target_t+1, target_t-1] formed non-target distribution
+target+1 formed non-target distribution
