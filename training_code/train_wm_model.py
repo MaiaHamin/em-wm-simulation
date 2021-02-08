@@ -113,28 +113,30 @@ def train_net_and_plot_accuracy(task, ctxt_fn, stim_fn, c_dim, s_dim, neps, n_ct
 
   plot_train_accuracy(score_tr, ttype, ssizeL, figure_path)
 
-  evac = eval_by_ttype(net, ctxt_fn, sample_fn, ssizeL, taskintL, neps=1000)
+  evac = eval_by_ttype(net, ctxt_fn, stim_fn, sample_fn, taskintL, ssizeL, n_ctxt_steps, neps=1000)
   plot_accuracy_by_trial_type(evac, taskintL, ssizeL, figure_path)
 
   return net
 
-def eval_by_ttype(net, ctxt_fn, sample_fn, ssize, task_int, neps):
+def eval_by_ttype(net, ctxt_fn, stim_fn, sample_fn, taskintL, ssizeL, n_ctxt_steps, neps):
   """ eval on given task for separate trial types
   returns evac on (match,nomatch,slure,clure)
   """
 
-  taskL_ev = [
-    [task_int, sample_fn(1, 0, 0), ssize],
-    [task_int, sample_fn(0, 0, 0), ssize],
-    [task_int, sample_fn(0, 1, 0), ssize],
-    [task_int, sample_fn(0, 0, 1), ssize]
-  ]
+  taskL_ev = []
+  for task_int in taskintL:
+    taskL_ev.append([task_int, sample_fn(1, 0, 0), ssizeL[task_int]])
+    taskL_ev.append([task_int, sample_fn(0, 0, 0), ssizeL[task_int]])
+    taskL_ev.append([task_int, sample_fn(0, 1, 0), ssizeL[task_int]])
+    taskL_ev.append([task_int, sample_fn(0, 0, 1), ssizeL[task_int]])
 
   evsc, ttype = run_model_for_epochs(
     net, taskL_ev,
     ctxt_fn=ctxt_fn,
+    stim_fn = stim_fn,
     training=False,
     neps_per_task=neps,
+    n_ctxt_steps=n_ctxt_steps,
     verb=False
   )
 

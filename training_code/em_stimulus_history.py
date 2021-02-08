@@ -22,7 +22,7 @@ def get_em_model_performance(net, taskL, ctxt_fn, stim_fn, neps_per_task, n_cont
     ttype = -np.ones([len(taskL), neps_per_task]) # array of trial-type information for d' measures
     for ep in range(neps_per_task):
         # resample context for this epoch
-        stimset = stim_fn()
+        stimset = tr.Tensor(stim_fn())
         cdrift = ctxt_fn(n_steps=n_context_steps)
         cdrift = tr.Tensor(cdrift)
         # interleave training for multiple task conditions each epoch
@@ -75,7 +75,7 @@ def simulate_em_and_plot_dprimes(net, ctxt_fn, stim_fn, neps_per_task, pr_match,
     score, ttype = get_em_model_performance(net, taskL, ctxt_fn, stim_fn, neps_per_task, n_context_steps,
                                             stim_priority_weight, hrate, sim_thresh)
 
-    dprime_fig_path = figure_path + ("dprime" + '_sw=' + str(stim_priority_weight) + "_hrate=" + str(hrate)).replace(".", "")
+    dprime_fig_path = figure_path + ("/dprime" + '_sw=' + str(stim_priority_weight) + "_hrate=" + str(hrate)).replace(".", "")
 
     calculate_and_plot_dprime(score, ttype, dprime_figure_path=dprime_fig_path)
 

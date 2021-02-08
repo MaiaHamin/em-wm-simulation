@@ -108,11 +108,11 @@ def sample_nback_retrieval_set_for_trial_sequence(stimset, cdrift, setsize,
     n_traces = 10
     trace_seq = [None] * n_traces
     ntokens,sdim = stimset.shape
-    min_ctxt_t = ntokens - setsize
+    min_context_t = setsize
 
     ## current stim and context
     stim_t_idx = np.random.randint(0,ntokens)
-    context_t_idx = np.random.randint(min_ctxt_t)
+    context_t_idx = np.random.randint(min_context_t, ntokens)
     stim_t = stimset[stim_t_idx]
     context_t = cdrift[context_t_idx]
     trace_seq[0] = (stim_t, context_t) # the 0th index is the current stim, context
@@ -172,38 +172,30 @@ def sample_nback_retrieval_set_for_trial_sequence(stimset, cdrift, setsize,
 # return a both match trace -- the stimuli match, and the context is the n-back context
 def nback_both_match(stim_set, cdrift, stim_t_idx, context_t_idx, setsize, ntokens):
     stim_m = stim_set[stim_t_idx]
-    context_m = cdrift[context_t_idx + setsize]
+    context_m = cdrift[context_t_idx - setsize]
     return (stim_m, context_m)
 
 # return a stim lure trace -- the stimuli match, but the context is not the n-back context
 def nback_stim_lure(stim_set, cdrift, stim_t_idx, context_t_idx, setsize, ntokens):
     stim_m = stim_set[stim_t_idx]
-    nback_context_idx = context_t_idx + setsize
-    rlo = context_t_idx + 1
-    rhi = min(nback_context_idx + 4, ntokens)
-    idx_context_m = np.random.choice(np.setdiff1d(range(rlo, rhi), nback_context_idx))
-    context_m = cdrift[idx_context_m]
+    context_m = get_lure_context(cdrift, context_t_idx, ntokens, setsize)
     return (stim_m, context_m)
 
 # return a context lure trace -- the stimuli don't match, but the context is the n-back context
 def nback_ctxt_lure(stim_set, cdrift, stim_t_idx, context_t_idx, setsize, ntokens):
     idx_stim_m = np.random.choice(np.setdiff1d(range(ntokens), stim_t_idx))
     stim_m = stim_set[idx_stim_m]
-    context_m = cdrift[context_t_idx + setsize]
+    context_m = cdrift[context_t_idx - setsize]
     return (stim_m, context_m)
 
 # return a neither match trace -- the stimuli don't match, and the context is not the n-back context.
 # optionally, for the EM simulations, this can probabilistically return a matching stimulus and a long-past context
 # (s.t. the trace isn't a proper lure, but simulates the repeating-stimuli dynamics of the task).
-def nback_neither_match(stim_set, cdrift, stim_t_idx, context_t_idx, setsize, ntokens, pr_prewindow_match = 0.1):
+def nback_neither_match(stim_set, cdrift, stim_t_idx, context_t_idx, setsize, ntokens, pr_prewindow_match = 0.0):
     if np.random.uniform() > pr_prewindow_match or ntokens - context_t_idx < 6:
         idx_stim_m = np.random.choice(np.setdiff1d(range(ntokens), stim_t_idx))
-        nback_context_idx = context_t_idx + setsize
-        rlo = context_t_idx + 1
-        rhi = min(nback_context_idx + 4, ntokens)
-        idx_context_m = np.random.choice(np.setdiff1d(range(rlo, rhi), nback_context_idx))
         stim_m = stim_set[idx_stim_m]
-        context_m = cdrift[idx_context_m]
+        context_m = get_lure_context(cdrift, context_t_idx, ntokens, setsize)
         return stim_m, context_m
     else:
         return nback_distant_slure(stim_set, cdrift, stim_t_idx, context_t_idx, setsize, ntokens)
@@ -212,9 +204,24 @@ def nback_neither_match(stim_set, cdrift, stim_t_idx, context_t_idx, setsize, nt
 def nback_distant_slure(stim_set, cdrift, stim_t_idx, context_t_idx, setsize, ntokens):
     idx_stim_m = np.random.choice(np.setdiff1d(range(ntokens), stim_t_idx))
     nback_context_idx = context_t_idx + setsize
-    rlo = nback_context_idx + 1
-    rhi = min(nback_context_idx + 10, ntokens)
+    rlo = max(0, nback_context_idx - 6)
+    rhi = min(nback_context_idx - 2, ntokens)
     idx_context_m = np.random.choice(range(rlo, rhi))
     stim_m = stim_set[idx_stim_m]
     context_m = cdrift[idx_context_m]
     return stim_m, context_m
+
+def get_lure_context(cdrift, context_t_idx, ntokens, setsize):
+    try:
+        nback_context_idx = context_t_idx - setsize
+        rlo = max(0, nback_context_idx - 2)
+        rhi = min(nback_context_idx + setsize, ntokens)
+        idx_context_m = np.random.choice(np.setdiff1d(range(rlo, rhi), nback_context_idx))
+        context_m = cdrift[idx_context_m]
+        return context_m
+    except:
+        print("uh oh")
+        print(nback_context_idx)
+        print(rlo)
+        print(rhi)
+        return

@@ -28,22 +28,21 @@ h_rate = 0.6
 # similarity threshold cutoff - min cosine similarity before search is terminated deterministically
 similarity_threshold = 0.5
 
-n_training_eps=10000
+n_training_eps=100000
 
 for seed in [1, 2]:
   for (mean, var) in drift_parameters:
 
       # Create descriptive model name & associated directories
-      model_name = 'ffwm_task-%s_training-probs-%i-%i-%i-%i_neps-%i_drift-params-%i-%i_seed%i' % (
-          task, pr_match, pr_slure, pr_clure, pr_nomatch, mean, var, n_training_eps, seed)
+      model_name = 'ffwm_task-{}_training-probs-{:.2f}-{:.2f}-{:.2f}-{:.2f}_neps-{:d}_drift-params-{:.2f}-{:.2f}_seed%{:d}'.format(
+          task, pr_match, pr_slure, pr_clure, pr_nomatch, n_training_eps, mean, var, seed)
 
       model_name = model_name.replace(".", "")
 
       # create directories for the model and figures
-      figure_path = "../figures/" + model_name
-      if not os.path.exists(figure_path):
-          os.makedirs(figure_path)
-      model_path = "../trained-models/" + model_name
+      dirname = os.path.dirname(__file__)
+      model_path = os.path.join(dirname, '../trained-models/' + model_name)
+      figure_path = model_path
       if not os.path.exists(model_path):
           os.makedirs(model_path)
 
@@ -62,7 +61,7 @@ for seed in [1, 2]:
       if task == "nback":
           print("Simulating EM...")
           simulate_em_and_plot_dprimes(net, ctxt_fn, stim_fn,
-                                       neps_per_task=10000, pr_match=pr_match,
+                                       neps_per_task=5000, pr_match=pr_match,
                                         pr_slure=pr_slure, pr_clure=pr_clure, n_context_steps=n_ctxt_steps,
                                        stim_priority_weight=stim_retrieval_weight,
                                        hrate = h_rate,

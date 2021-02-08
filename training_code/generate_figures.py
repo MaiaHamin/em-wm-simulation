@@ -1,4 +1,5 @@
 from matplotlib import pyplot as plt
+from matplotlib.colors import to_rgba
 import numpy as np
 
 # plot training accuracy
@@ -35,7 +36,8 @@ def plot_accuracy_by_trial_type(evac,
                                 figure_path):
   for tidx, (task_int, ssize) in enumerate(zip(taskintL, ssizeL)):
     plt.title('Accuracy by trial type')
-    plt.bar(np.arange(4) + (.45 * tidx), evac, width=.45)
+    plt.bar(np.arange(4) + (.45 * tidx), evac[task_int], width=.45, label="setsize:" + str(ssize))
+  plt.legend()
   plt.xticks(range(4), ['match', 'nomatch', 'slure', 'clure'])
   plt.savefig(figure_path + "/trial-type-accuracy")
   plt.close('all')
