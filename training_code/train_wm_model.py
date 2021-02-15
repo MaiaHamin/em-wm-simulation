@@ -113,8 +113,8 @@ def train_net_and_plot_accuracy(task, ctxt_fn, stim_fn, c_dim, s_dim, neps, n_ct
 
   plot_train_accuracy(score_tr, ttype, ssizeL, figure_path)
 
-  evac = eval_by_ttype(net, ctxt_fn, stim_fn, sample_fn, taskintL, ssizeL, n_ctxt_steps, neps=1000)
-  plot_accuracy_by_trial_type(evac, taskintL, ssizeL, figure_path)
+  scores_by_ttype = eval_by_ttype(net, ctxt_fn, stim_fn, sample_fn, taskintL, ssizeL, n_ctxt_steps, neps=1000)
+  plot_accuracy_by_trial_type(scores_by_ttype, taskintL, ssizeL, figure_path)
 
   return net
 
@@ -124,6 +124,7 @@ def eval_by_ttype(net, ctxt_fn, stim_fn, sample_fn, taskintL, ssizeL, n_ctxt_ste
   """
 
   taskL_ev = []
+  # generate a list of tasks which are trials all of one kind so we can see accuracy by trial type
   for task_int in taskintL:
     taskL_ev.append([task_int, sample_fn(1, 0, 0), ssizeL[task_int]])
     taskL_ev.append([task_int, sample_fn(0, 0, 0), ssizeL[task_int]])
@@ -141,6 +142,10 @@ def eval_by_ttype(net, ctxt_fn, stim_fn, sample_fn, taskintL, ssizeL, n_ctxt_ste
   )
 
   evac = evsc.mean(1)
-  return evac
+  # regroup the scores by the setsize
+  scores_by_ss = [[]] * len(taskintL)
+  for task_int in taskintL:
+    scores_by_ss[task_int] = evac[task_int*4:(task_int+1)*4]
+  return scores_by_ss
 
 

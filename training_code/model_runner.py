@@ -28,7 +28,7 @@ h_rate = 0.6
 # similarity threshold cutoff - min cosine similarity before search is terminated deterministically
 similarity_threshold = 0.5
 
-n_training_eps=100000
+n_training_eps=500000
 
 for seed in [1, 2]:
   for (mean, var) in drift_parameters:

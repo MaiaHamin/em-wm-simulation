@@ -36,7 +36,7 @@ def plot_accuracy_by_trial_type(evac,
                                 figure_path):
   for tidx, (task_int, ssize) in enumerate(zip(taskintL, ssizeL)):
     plt.title('Accuracy by trial type')
-    plt.bar(np.arange(4) + (.45 * tidx), evac[task_int], width=.45, label="setsize:" + str(ssize))
+    plt.bar(np.arange(4) + (.45 * tidx), evac[tidx], width=.45, label="setsize:" + str(ssize))
   plt.legend()
   plt.xticks(range(4), ['match', 'nomatch', 'slure', 'clure'])
   plt.savefig(figure_path + "/trial-type-accuracy")
