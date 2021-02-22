@@ -1,7 +1,7 @@
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
-from training_code.em_trace_model import spherical_drift, gen_stims
+from training_code.em_trace_model import spherical_drift, gen_stims, gen_gaussian_stims
 from training_code.train_wm_model import train_net_and_plot_accuracy
 from training_code.em_stimulus_history import simulate_em_and_plot_dprimes
 
@@ -10,13 +10,14 @@ task = "nback"  # "stern"
 
 # function and parameters for the drifting context
 ctxt_fn_name = spherical_drift
-drift_parameters = [(0.25, 0.0), (0.25, 0.05), (0.25, 0.075), (0.4, 0.075)]
+drift_parameters = [(0.25, 0.075), (0.25, 0.0), (0.25, 0.05), (0.4, 0.075)]
 ctxt_d = 25
 n_ctxt_steps=20
 
 # function which returns a stimulus - here, always an identity matrix, but could be redrawn from a distribution each time, e.g.
 stim_d = 20
-stim_fn = lambda: gen_stims(stim_d)
+stim_v = 0.5 # parameter which controls the noisiness of the drawn stimuli
+stim_fn = lambda: gen_gaussian_stims(stim_d, stim_v) # lambda: gen_stims(stim_d)
 
 # probabilities of different training conditions: both match, stimulus lure, context lure, neither match
 pr_match, pr_slure, pr_clure, pr_nomatch = 0.4, 0.2, 0.2, 0.2
@@ -28,14 +29,14 @@ h_rate = 0.6
 # similarity threshold cutoff - min cosine similarity before search is terminated deterministically
 similarity_threshold = 0.5
 
-n_training_eps=500000
+n_training_eps=250000
 
 for seed in [1, 2]:
   for (mean, var) in drift_parameters:
 
       # Create descriptive model name & associated directories
-      model_name = 'ffwm_task-{}_training-probs-{:.2f}-{:.2f}-{:.2f}-{:.2f}_neps-{:d}_drift-params-{:.2f}-{:.2f}_seed%{:d}'.format(
-          task, pr_match, pr_slure, pr_clure, pr_nomatch, n_training_eps, mean, var, seed)
+      model_name = 'ffwm_task-{}_training-probs-{:.2f}-{:.2f}-{:.2f}-{:.2f}_neps-{:d}_drift-params-{:.2f}-{:.2f}_gaussian-stim-params-{:.2f}_seed{:d}'.format(
+          task, pr_match, pr_slure, pr_clure, pr_nomatch, n_training_eps, mean, var, stim_v, seed)
 
       model_name = model_name.replace(".", "")
 

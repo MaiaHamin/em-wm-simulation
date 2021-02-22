@@ -220,8 +220,5 @@ def get_lure_context(cdrift, context_t_idx, ntokens, setsize):
         context_m = cdrift[idx_context_m]
         return context_m
     except:
-        print("uh oh")
-        print(nback_context_idx)
-        print(rlo)
-        print(rhi)
+        print("Error in generating lure context")
         return

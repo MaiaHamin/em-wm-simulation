@@ -32,6 +32,15 @@ def return_sphere_context_supplier_from_params(d, m, v):
 def gen_stims(sdim):
     return np.identity(sdim)
 
+# Generate identity matrix where each row is a one-hot representation of a stimulus
+def gen_stims(sdim):
+    return np.identity(sdim)
+
+def gen_gaussian_stims(sdim, v):
+    centers = np.identity(sdim)
+    stims = np.random.normal(centers, v)
+    return stims
+
 # Flip bits on an input vector with probability pr_flip to mimic processing noise / distortion -- unused
 def bit_flip_noise(vector, pr_flip):
     for ind in range(len(vector)):
